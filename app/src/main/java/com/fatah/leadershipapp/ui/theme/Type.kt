@@ -1,6 +1,7 @@
 package com.fatah.leadershipapp.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -41,7 +42,13 @@ val Typography = Typography(
         fontFamily = robotoFonts,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp
-    )
+    ),
+    subtitle2 = TextStyle(
+        color = Color.White,
+        fontFamily = robotoFonts,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp
+    ),
 
 
 )

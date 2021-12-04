@@ -1,5 +1,7 @@
 package com.fatah.leadershipapp
 
+import android.graphics.drawable.shapes.OvalShape
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,13 +15,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.fatah.leadershipapp.ui.theme.*
+
+private const val TAG = "HomeScreen"
 
 @Composable
 fun HomeScreen() {
@@ -30,8 +43,8 @@ fun HomeScreen() {
         val width = constraints.maxWidth
         val height = constraints.maxHeight
 
-        val greenPoint1 = Offset(width.toFloat(), height*0.65f)
-        val greenPoint2 = Offset(-width.toFloat(), height * 0.65f)
+        val greenPoint1 = Offset(width.toFloat(), height*0.58f)
+        val greenPoint2 = Offset(-width.toFloat(), height * 0.58f)
 
         val greenColoredPath = Path().apply {
             moveTo(greenPoint1.x, greenPoint1.y)
@@ -52,26 +65,30 @@ fun HomeScreen() {
             modifier = Modifier.padding(16.dp)
         ){
             TopMenuSection()
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
             SearchSection()
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
             ContentSection(
                 listOf(
                     Content(
                         "Evaluation of your skills",
                         "Alfred Neal",
                         R.drawable.woman,
+                        SecondaryGreen,
                         "8 min",
                         false,
-                        "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
+                        "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
+                        ButtonOrange
                     ),
                     Content(
                         "Track your Progress",
                         "Amstronge",
                         R.drawable.female_doctor,
+                        AlternateYellow,
                         "5 min",
                         true,
-                        "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
+                        "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
+                        ButtonBlue
                     )
                 )
             )
@@ -139,10 +156,28 @@ fun TopMenuSection() {
 @Composable
 fun SearchSection() {
     Column {
-        Text(
-            text = "Hallo Fatah",
-            style = MaterialTheme.typography.h1
-        )
+        Row {
+            Text(
+                text = "Hallo",
+                style = MaterialTheme.typography.h1,
+                modifier = Modifier
+                    .drawBehind {
+                        val strokeWidth = 4.5.dp.toPx() * density
+                        val y = size.height - strokeWidth / 2
+
+                        drawLine(
+                            ButtonOrange,
+                            Offset(0f, y),
+                            Offset(size.width, y),
+                            strokeWidth
+                        )
+                    }
+            )
+            Text(
+                text = " Fatah",
+                style = MaterialTheme.typography.h1
+            )
+        }
         Spacer(modifier = Modifier.padding(8.dp))
         Row {
             Text(
@@ -151,7 +186,14 @@ fun SearchSection() {
             )
             Text(
                 text = "Now",
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier
+                    .drawBehind {
+                        drawOval(
+                            color = Color.Black
+                        )
+                    }
+                    .padding(1.5.dp)
             )
         }
         Spacer(modifier = Modifier.padding(8.dp))
@@ -173,11 +215,11 @@ fun Searchbar() {
                 onClick = {},
                 shape = RoundedCornerShape(20, topEndPercent = 0, bottomEndPercent = 0, 20),
                 border = BorderStroke(0.75.dp, color = Color.Black),
-                colors = ButtonDefaults.buttonColors(contentColor = Color.White, backgroundColor = GreyText),
+                colors = ButtonDefaults.buttonColors(contentColor = Color.Black, backgroundColor = ButtonGrey),
                 modifier = Modifier
                     .size(56.dp)
             ) {
-                val searchPainter = painterResource(id = R.drawable.search)
+                val searchPainter = painterResource(id = R.drawable.outline_search_24)
                 Icon(painter = searchPainter, contentDescription = "search")
             }
             TextField(
@@ -194,7 +236,7 @@ fun Searchbar() {
                     backgroundColor = Color.White
                 ),
                 modifier = Modifier
-                    .width(230.dp)
+                    .width(215.dp)
                     .border(0.75.dp, color = Color.Black)
             )
         Spacer(modifier = Modifier.padding(5.dp))
@@ -235,9 +277,13 @@ fun ContentSection(
             Icon(painter = morePainter, contentDescription = "more content")
         }
     }
-
+    Spacer(modifier = Modifier.padding(4.dp))
     LazyColumn() {
         items(contents.size) {
+            if (it == 0) {
+                Spacer(modifier = Modifier.padding(top = 30.dp))
+            }
+            Log.i(TAG, "ContentSection: ")
             ContentBox(content = contents[it])
         }
     }
@@ -247,51 +293,106 @@ fun ContentSection(
 fun ContentBox(
     content: Content
 ) {
-    Box(
-        modifier = Modifier
-            .size(250.dp, 80.dp)
-            .clip(RoundedCornerShape(20))
-            .border(1.dp, Color.Black)
-    ) {
-        Column {
-            Text(
-                text = content.title,
-                style = MaterialTheme.typography.subtitle1
-            )
-            
-            Row {
-                Box(modifier = Modifier.size(20.dp)) {
-                    val publisherIcon = painterResource(id = content.publisherIcon)
-                    Image(painter = publisherIcon, contentDescription = content.publisher)
-                }
+    Column() {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(20),
+            border = BorderStroke(1.dp, color = Color.Black)
 
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                Text(
-                    text = content.publisher,
-                    style = MaterialTheme.typography.body1
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Image(
+                    painter = rememberImagePainter(
+                        data = content.image
+                    ),
+                    contentDescription = content.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
                 )
-
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                Box(modifier = Modifier.size(18.dp)) {
-                    val timeIcon = painterResource(id = R.drawable.chronometer)
-                    Image(painter = timeIcon, contentDescription = content.time)
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(
-                    text = content.time,
-                    style = MaterialTheme.typography.body1
-                )
-
-                Spacer(modifier = Modifier.padding(8.dp))
-                Box(modifier = Modifier.size(18.dp)) {
-                    val heartIcon = painterResource(id = R.drawable.heart_black)
-                    Image(painter = heartIcon, contentDescription = content.time)
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .height(70.dp)
+                        .width(150.dp)
+                        .padding(top = 16.dp)
+                        .align(Alignment.Center),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = content.background,
+                        contentColor = Color.Black
+                    ),
+                    border = BorderStroke(2.dp, Color.Black),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    val painter = painterResource(id = R.drawable.outline_play_circle_filled_24)
+                    Icon(painter = painter, contentDescription = "play")
                 }
             }
         }
+
+        Card(
+            shape = RoundedCornerShape(20),
+            border = BorderStroke(1.dp, color = Color.Black),
+            elevation = 4.dp,
+            modifier = Modifier.offset(y = (-180).dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(250.dp, 80.dp)
+                    .padding(15.dp)
+            ) {
+                Column {
+                    Text(
+                        text = content.title,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Spacer(modifier = Modifier.padding(6.dp))
+                    Row {
+                        Box(modifier = Modifier
+                            .size(20.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(content.publisherIconBackground)
+                            .padding(3.dp)
+                        ) {
+                            val publisherIcon = painterResource(id = content.publisherIcon)
+                            Image(painter = publisherIcon, contentDescription = content.publisher)
+                        }
+
+                        Spacer(modifier = Modifier.padding(4.dp))
+
+                        Text(
+                            text = content.publisher,
+                            style = MaterialTheme.typography.body1
+                        )
+
+                        Spacer(modifier = Modifier.padding(8.dp))
+
+                        Box(modifier = Modifier.size(18.dp)) {
+                            val timeIcon = painterResource(id = R.drawable.chronometer)
+                            Image(painter = timeIcon, contentDescription = content.time)
+                        }
+
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = content.time,
+                            style = MaterialTheme.typography.body1
+                        )
+
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        Box(modifier = Modifier.size(18.dp)) {
+                            val heartIcon = painterResource(id = R.drawable.heart_black)
+                            Image(painter = heartIcon, contentDescription = content.time)
+                        }
+                    }
+                }
+            }
+        }
+
+//        val backgroundPainter = painterResource(id = re)
     }
 }
 
